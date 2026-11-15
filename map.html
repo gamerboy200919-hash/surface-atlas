@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Explore observed changes in Earth's surface with NASA–ISRO radar data."><title>Map Explorer | Surface Atlas</title><link rel="stylesheet" href="atlas.css"><link rel="stylesheet" href="vendor/leaflet.css"><script src="vendor/leaflet.js" defer></script><script src="data/base-bounds.js" defer></script><script src="data/los.js" defer></script><script src="data/catalog.js" defer></script><script src="catalog-client.js" defer></script><script src="vendor/satellite.js" defer></script><script src="orbit.js" defer></script><script src="map.js" defer></script></head><body class="map-page">
+<a class="skip" href="#main">Skip to content</a><header class="mast"><a class="wordmark" href="index.html"><span class="mark" aria-hidden="true">◉</span> Surface Atlas</a><nav aria-label="Main navigation"><a aria-current="page" href="map.html">Map</a><a href="map.html?area=orbit">Live orbit</a><a href="index.html#method">Radar guide</a><a href="index.html#resources">Data &amp; sources</a></nav></header>
+<main id="main" class="map-main">
+<div class="map-toolbar"><div><h1>Map explorer</h1><label class="sr" for="area">Study area</label><select id="area">
+<option value="venezuela">Northern Venezuela</option><option value="hubbard">Hubbard Glacier</option>
+<option value="amazon">Amazon Basin</option><option value="greenland">Jakobshavn Glacier</option><option value="california">Central Valley</option><option value="hawaii">Kīlauea</option><option value="world">World overview</option><option value="orbit">NISAR live orbit</option>
+</select></div><div class="tool-actions"><button id="compare" type="button" aria-pressed="false">⇆ <span>Compare</span></button><button id="wide" type="button" aria-expanded="true" aria-controls="sidebar">⛶ <span>Expand map</span></button></div></div>
+<div class="workspace" id="workspace">
+<aside id="sidebar" aria-label="Map layers and inspector">
+<div class="side-intro"><p id="kind" class="kicker"></p><h2 id="region"></h2><p id="description"></p><a id="source" target="_blank" rel="noopener">Original data ↗</a></div>
+<div class="side-section" id="layers"><h3>Layers</h3><div id="los-controls">
+<label><input type="checkbox" id="heat" checked> Displacement colors</label>
+<label><input type="checkbox" id="vectors" checked> Place markers</label>
+<label for="opacity">Radar opacity <output id="opacity-value">87%</output></label><input type="range" id="opacity" min="15" max="100" value="87">
+<label id="compare-pick" hidden>Compare with <select id="secondary" aria-label="Comparison radar pair"></select></label>
+<div class="jump" id="jumps"></div></div>
+<div id="catalog-controls" hidden>
+<label for="product">Product</label><select id="product"><option value="GCOV">GCOV · Backscatter</option><option value="GUNW">GUNW · Interferogram</option></select>
+<label for="scene-select">Acquisition</label><select id="scene-select"></select>
+<label for="channel">Radar image</label><select id="channel"><option value="composite">Published composite</option><option value="HH">HH</option><option value="HV">HV</option><option value="VV">VV</option><option value="VH">VH</option></select>
+<label id="footprint-control" hidden><input type="checkbox" id="footprints" checked> Scene footprints</label><p id="catalog-count" class="muted"></p><p id="catalog-status" class="muted" role="status"></p><button id="catalog-refresh" class="compact-button" type="button">Check for new scenes</button><details class="map-explainer"><summary>What am I looking at?</summary><p>GCOV shows radar-return strength. GUNW compares the phase of two observations to study motion along the radar’s line of sight. The scene previews are for visual inspection. Use the original products for measurements.</p></details></div>
+<div id="hubbard-controls" hidden><p class="muted">Green tones reveal rough terrain, including new avalanche deposits in the later image.</p><button id="fit-image" type="button">Fit image</button></div>
+</div>
+<div id="orbit-controls" class="side-section" hidden>
+<h3>Estimated position</h3><dl class="orbit-stats"><dt>Coordinates</dt><dd id="orbit-position">—</dd><dt>Altitude</dt><dd id="orbit-altitude">—</dd><dt>Position time</dt><dd id="orbit-time">—</dd><dt>Orbit data epoch</dt><dd id="orbit-epoch">—</dd></dl>
+<label><input id="orbit-follow" type="checkbox"> Follow satellite</label>
+<button id="orbit-refresh" class="compact-button" type="button">Refresh orbit</button>
+<p id="orbit-status" class="muted" role="status">Waiting for orbital data.</p>
+</div><div class="side-section" id="inspector"><div class="inspector-head"><h3 id="inspect-title">Point inspector</h3><button id="copy" type="button">Copy</button></div><p class="muted" id="inspect-note"></p><div id="inspection" aria-live="polite"></div><p id="copy-status" class="muted" role="status"></p><div id="chart" hidden></div></div>
+</aside>
+<div class="map-column">
+<div class="map-stage" id="stage">
+<div id="geo" aria-label="Interactive geographic map"></div>
+<div id="geo-tools" class="geo-tools" aria-label="Geographic map controls" hidden><label class="sr" for="basemap">Map background</label><select id="basemap"><option value="terrain">Terrain</option><option value="satellite">Satellite</option></select><button id="fit-region" type="button">Fit area</button></div>
+<p id="tile-status" class="tile-status" role="status" hidden>Map tiles are temporarily unavailable.</p>
+<div id="image-stage" hidden>
+<div class="image-plane" id="image-plane"><img id="image-a" draggable="false" alt=""><img id="image-b" draggable="false" alt=""><img id="archive-image" draggable="false" alt="" hidden></div>
+<div id="archive-status" class="archive-status" role="status" hidden><p id="archive-status-text"></p><a id="open-archive-image" target="_blank" rel="noopener" hidden>Open image at ASF ↗</a></div><div class="image-zoom"><button id="image-plus" type="button" aria-label="Zoom image in">+</button><button id="image-minus" type="button" aria-label="Zoom image out">−</button><button id="image-fit" type="button" aria-label="Fit radar image">Fit</button></div></div>
+<div class="scene-title" id="scene-title"></div>
+<div id="archive-views" class="archive-views" role="group" aria-label="Archive view" hidden><button type="button" id="radar-view" aria-pressed="true">Radar image</button><button type="button" id="coverage-view" aria-pressed="false">Coverage map</button></div>
+<p id="browse-credit" class="browse-credit" hidden>ASF browse imagery · visual preview</p>
+<div id="swipe-controls" hidden><input id="swipe" type="range" min="0" max="100" value="50" aria-label="Swipe between layers"><b id="swipe-handle" aria-hidden="true">↔</b><span id="label-left"></span><span id="label-right"></span></div>
+<div id="footprint-legend" class="legend footprint-legend" hidden><b>Scene footprints</b><div><i class="selected-footprint"></i>Selected scene</div><div><i></i>Other scenes</div><small>Each box shows an acquisition’s coverage. Click a box for its date and image. Overlap means the same ground was covered more than once.</small></div><div id="orbit-legend" class="legend orbit-legend" hidden>
+<b>NISAR orbit</b><div><i class="orbit-dot" aria-hidden="true"></i>Estimated position</div>
+<label><input id="orbit-path" type="checkbox" checked> Show predicted path</label>
+<small>Next 100 minutes</small>
+<button id="orbit-find" type="button" disabled>Find NISAR</button>
+</div><div class="legend" id="legend" hidden><b>Line-of-sight displacement</b><div class="scale"></div><div class="legend-ticks"><span>−60 cm</span><span>0</span><span>+60 cm</span></div><small>Colors saturate at the endpoints.</small></div>
+</div>
+<div class="timeline" id="timeline"><button type="button" id="play" aria-pressed="false">▶ <span>Play</span></button><div class="timeline-main"><div class="timeline-label"><label for="frame" id="frame-label">Acquisitions</label><output id="frame-value"></output></div><input type="range" id="frame" value="0" min="0" max="2" aria-label="Acquisition frame"><div id="frame-choices" class="frame-choices" role="group" aria-label="Choose acquisition"></div></div></div>
+</div></div></main></body></html>
